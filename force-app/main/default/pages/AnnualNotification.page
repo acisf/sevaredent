@@ -1,0 +1,89 @@
+<apex:page applyBodyTag="false" applyHtmlTag="false" showHeader="false" sidebar="false" standardStylesheets="false" renderAs="pdf" controller="AnnualNotificationController">
+    <head>
+        <style>
+            @page {
+            	margin-top: 1.5in;
+            	margin-bottom: 1in;
+            	@top-center {
+            		content: element(header);
+            	}
+            	@bottom-center {
+            		content: element(footer);
+            	}
+            }
+            div.header {
+            	position: running(header);
+            }
+            div.footer {
+            	position: running(footer);
+            	border-top: 1px solid #fec98a;
+            	min-width: 5in;
+            	width: 100%;
+            }
+            div.content {            
+            	margin-left:.28in;
+            	margin-right:.28in;
+            }
+        </style> 
+        
+    </head>
+    <!-- <apex:image id="SevaredentLogo" value="{!$Resource.SevaredentLogo}" width="100%" height="100"/> -->
+    <div class="header">          
+        <apex:image style="float:left;" width="3in" height="auto" id="SevaredentLogo1" value="{!$Resource.letterheader1}" /> 
+        <apex:image style="float:right;margin-right:-.65in;"  width="2in" height="auto" id="SevaredentLogo2" value="{!$Resource.letterheader2}" />       
+    </div>
+    <div style="clear:both;">
+    </div>
+    <div class="content">        
+        {!currentDate}<br/><br/>
+        {!primaryContactName}<br/><br/>
+        
+        {!memberAccount.Name}<br/>
+        {!shippingStreet}<br/>
+        {!shippingAddress}<br/><br/>
+        
+        <b>{!bodyLine1}</b>
+        <p>{!bodyLine2}</p>
+        <p>{!bodyLine3}</p>
+        
+        
+        <table border="1" cellSpacing="0" cellpadding="0" width="100%" >
+            <tr>
+                <th>Contract Number</th>
+                <th>Vendor</th>
+                <th>Category</th>
+                <th>Vendor Fee</th>
+            </tr>
+            <apex:repeat value="{!VendorAmounts}" var="v">
+                <tr>
+                    <td>{!v['VendorContractName']}</td>
+                    <td>{!v['VendorContractAccount']}</td>
+                     <td>{!v['Category']} - {!v['SubCategory']}</td>
+                    <td align="right">
+                        <apex:outputText value="{0, number,$ ###,###,##0.00}">
+                            <apex:param value="{!v['Amount']}" />
+                        </apex:outputText>
+                        <!--
+                        ${!ROUND(revenueTracking.Amount__c, 2)}
+                        -->
+                    </td>
+                </tr>
+            </apex:repeat>
+        </table>
+        <br/>
+        
+        {!footerLine1}<br/>
+        <br/>
+        {!footerLine2}<br/>
+        {!footerLine3}<br/>
+        <br/>
+        {!footerLine4}<br/>
+        {!footerLine5}<br/>
+        {!footerLine6}<br/>
+        
+    </div>
+    
+    <div class="footer">
+    </div>
+    
+</apex:page>

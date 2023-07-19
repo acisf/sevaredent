@@ -1,0 +1,53 @@
+<template>
+    <div if:true={error} class="slds-text-color_error">{error}</div>
+    <div class="files__wrapper">
+        <div class="files__container slds-card slds-card_boundary headerBottomBorder forceRelatedListCardDesktop">
+            <header class="files__header">
+                <h1 class="files__title">
+                    <lightning-icon
+                        icon-name="standard:drafts"
+                        size="small"
+                        alternative-text="files"
+                    >
+                    </lightning-icon>
+                    <span>Related Files ({filesNumber})</span>
+                </h1>
+            </header>
+
+            <ul class="files__list">
+                <template for:each={files} for:item="file">
+                    <li key={file.Id} class="files__list-item">
+                        <h1>
+                            <div>
+                                <lightning-icon
+                                    class="slds-p-right_small"
+                                    icon-name={file.Icon}
+                                    size="medium"
+                                    alternative-text="file"
+                                >
+                                </lightning-icon>
+                            </div>
+                            <div>
+                                <a
+                                    data-id={file.ContentDocumentId}
+                                    onclick={handleFileClick}
+                                >
+                                    {file.Title}</a
+                                >
+                                <div>
+                                    <span class="files__info"
+                                        >{file.ContentModifiedDate}</span
+                                    ><span class="files__info"
+                                        >{file.ContentSize}</span
+                                    ><span class="files__info"
+                                        >{file.FileExtension}</span
+                                    >
+                                </div>
+                            </div>
+                        </h1>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </div>
+</template>

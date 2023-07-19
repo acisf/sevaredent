@@ -1,0 +1,14 @@
+lightning-input {
+    padding-bottom: 1rem;
+}
+
+.email-form-container {
+    padding-top: 5rem;
+    width: 40%;
+    margin: auto;
+}
+
+.email-send_btn {
+    padding-top: 1rem;
+    display: block;
+}

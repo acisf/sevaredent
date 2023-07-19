@@ -1,0 +1,91 @@
+<aura:component controller="CSVPriceUploadComponentController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:handler name="init" value="this" action="{!c.doInit}"/>
+    
+    
+    <aura:attribute name="alreadyClicked" type="Boolean" default="false"/>
+    <!--- ERROR MESSAGE-->
+    <aura:attribute name="popupHeader" type="String" default="ERROR"/>
+    <aura:attribute name="popupTheme" type="String" default="slds-theme--error"/>
+    <aura:attribute name="popupMessage" type="String" default="Something went wrong."/>
+    <aura:attribute name="errorMessage" type="String" default="Something went wrong."/>
+   
+    <!-- SPINNER-->
+    <div aura:id="spinner_box" class="slds-hide">
+		<lightning:spinner variant="brand" size="large"/>
+	</div>
+    
+    <aura:attribute name="contractAgreementRecord" type="APXT_Redlining__Contract_Agreement__c"/>
+    <aura:attribute name="recordError" type="String"
+                    description="An error message bound to force:recordData"/>
+
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      fields="Name,Sevaredent_Contract_Number__c"
+                      targetError="{!v.recordError}"
+                      targetFields="{!v.contractAgreementRecord }"
+                      mode="VIEW"/>
+
+
+
+    <!--ERROR POP UP-->
+    
+    <div aura:id="modal_popup" class="slds-hide">
+        <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+            <div class="slds-modal__container" style ="width: 60% !important;">
+                <div class="{!'slds-modal__header ' + v.popupTheme + ' slds-theme--alert-texture'}">
+                    <h2 class="slds-text-heading--medium" id="prompt-heading-id">{!v.popupHeader}</h2>
+                </div>
+                <div class=" slds-modal__content slds-p-around--medium">
+                    
+                    <ui:outputText class="slds-align_absolute-center" value="{!v.popupMessage}"/> 
+                    
+                    <ui:outputText class="slds-align_absolute-center" value="{!v.errorMessage}"/>
+                    
+                </div>
+                <div class="slds-modal__footer slds-theme--default">
+                    <lightning:button variant="brand" label="Close" onclick="{!c.closeWarningBox}"/> 
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </div>
+
+
+
+    <div class="slds-page-header ">
+		<div class="slds-media">
+			<!--<button class="slds-button" onclick="{!c.navigateToCasePage}">&laquo; Back To Case</button>-->
+			<div class="slds-align_absolute-center">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container " title="">
+						<!--<lightning:icon iconName="action:upload" variant="" size="x-small"/> -->
+					</span>
+				</div>
+				<div class="slds-media__body">
+					Sevaredent Contract Number: {!v.contractAgreementRecord.Sevaredent_Contract_Number__c}
+					<p class="slds-text-body_small slds-line-height_reset"></p>
+				</div>
+			</div>
+			<!--<button class="slds-button slds-button_neutral" aura:id="preButton2" onclick="{!c.moveToCredentials}">Add Credentials</button> -->
+		</div>
+	</div>
+
+    <div>
+        <p>
+            <br/>
+            <br/>
+            This action will delete the pricing records related to contract agreement 
+            {!v.contractAgreementRecord.Name} where 'To Be Deleted' field is checked.
+            <br/>
+            <br/>
+        </p>
+    
+        <div class="slds-align_absolute-center slds-box defualt-padding">
+            <button disabled="{!v.alreadyClicked}" class="  slds-button slds-button_brand" onclick="{!c.deleteRecords}">Proceed To Delete</button>
+        </div>
+    </div>
+
+
+
+</aura:component>

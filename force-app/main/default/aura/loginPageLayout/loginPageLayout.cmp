@@ -1,0 +1,18 @@
+<aura:component implements="forceCommunity:layout" description="Login Page Layout" access="global">
+    <ltng:require styles="{!$Resource.communityAssets + '/css/main.css'}" />
+    <aura:attribute name="loginLogoSection" type="Aura.Component[]"/>
+    <aura:attribute name="content" type="Aura.Component[]"/>
+    <div class="login-page__section">
+        <div class="login-page__wrapper">
+            <div class="login-page__container">
+                <div class="login-page__logo-container">
+                    <!-- {!v.loginLogoSection} -->
+                    <img src="{!$Resource.communityAssets + '/images/logo-blue.svg'}"/>
+                </div>
+                <div class="login-page__form-container">
+                    {!v.content}
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

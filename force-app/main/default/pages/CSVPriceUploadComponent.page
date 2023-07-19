@@ -1,0 +1,31 @@
+<apex:page standardController="APXT_Redlining__Contract_Agreement__c" sidebar="false" showHeader="false">
+    <apex:includeScript value="/lightning/lightning.out.js"/>
+    <apex:slds />
+    <div class="slds-spinner_container" id="pagespinner">
+        <div role="status" class="slds-spinner slds-spinner--large">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <script>
+    //USE THE BELOW URL
+    //https://sevaredent--dev--c.visualforce.com/apex/CSVPriceUploadComponent?Id=a0h550000036CI0AAM
+    var recordCaseId = '{!$CurrentPage.parameters.Id}';
+    
+
+        $Lightning.use("c:CSVPriceUploadComponentApp", function() {
+            $Lightning.createComponent(
+                "c:CSVPriceUploadComponent",
+                {"recordId" : recordCaseId },
+                "ReadCSVDiv",
+                function(cmp) {
+                    console.log("Component created!");
+                    var spinner = document.getElementById("pagespinner");
+                    spinner.className = "slds-spinner_container slds-hide";
+                });
+            });
+    </script>
+    <div id="ReadCSVDiv"></div>
+</apex:page>

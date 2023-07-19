@@ -1,0 +1,20 @@
+<template>
+    <div class="email-form-container">
+        <lightning-input
+            class="email-subject"
+            label={LABELS.SUBJECT}
+            required
+        ></lightning-input>
+        <lightning-textarea
+            class="email-message"
+            label={LABELS.MESSAGE}
+            required
+        ></lightning-textarea>
+        <lightning-button
+            class="email-send_btn"
+            variant="brand"
+            label={LABELS.SEND}
+            onclick={handleClick}
+        ></lightning-button>
+    </div>
+</template>

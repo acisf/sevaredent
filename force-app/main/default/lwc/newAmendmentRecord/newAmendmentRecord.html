@@ -1,0 +1,302 @@
+<!--
+ - Created by cshah on Oct 30, 2020.
+ -->
+
+<!-- New Amendment Record -->
+<template>
+    <div class="slds-page-header slds-var-m-bottom_large">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:contract"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate" title="Amendment">Amendment</span>
+                                </h1>
+                            </div>
+                        </div>
+                        <p class="slds-page-header__name-meta">{subtitle}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-is-relative">
+        <template if:true={loading}>
+            <lightning-spinner variant="brand" title="Loading..."></lightning-spinner>
+        </template>
+
+        <lightning-card>
+            <template if:true={isEditMode}>
+                <lightning-record-edit-form object-api-name="Amendment__c" record-id={recordId} onsuccess={handleSuccess} onerror={handleOnError} onsubmit={handleSubmit} onload={handleOnLoad}>
+                    <lightning-layout multiple-rows class="slds-m-around_medium">
+                        <lightning-layout-item size="12">
+                            <lightning-output-field field-name="Warning__c" variant="label-hidden"></lightning-output-field>
+                        </lightning-layout-item>
+                        <template if:true={isWarningFromLocal}>
+                            <lightning-layout multiple-rows>
+                                <lightning-layout-item size="12">
+                                    <lightning-formatted-rich-text value={warningString}></lightning-formatted-rich-text>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </template>
+                    </lightning-layout>
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-var-p-horizontal_small">
+                            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder">
+                                <span class="section-header-title slds-var-p-horizontal--small slds-truncate slds-var-m-left_small">
+                                    Amendment Details
+                                </span>
+                            </h3>
+
+                            <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+                                <lightning-input-field field-name="Amendment_Number1__c"></lightning-input-field>
+                                <lightning-input-field field-name="Amendment_Effective_Date__c"></lightning-input-field>
+                                <lightning-input-field field-name="Amendment_Description__c"></lightning-input-field>
+                                <lightning-input-field field-name="Amendment_Status__c"></lightning-input-field>
+                                <lightning-input-field field-name="Amendment_Type__c"></lightning-input-field>
+                            </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-var-p-horizontal_small">
+                            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder">
+                                <span class="section-header-title slds-var-p-horizontal--small slds-truncate slds-var-m-left_small">
+                                    Contract Fields for Amendment
+                                </span>
+                            </h3>
+                            <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+                                <lightning-layout multiple-rows>
+                                    <lightning-layout-item size="12" class="slds-var-m-bottom_small">
+                                        <lightning-layout multiple-rows>
+                                            <lightning-layout-item size="12" medium-device-size="6">
+                                                <lightning-combobox
+                                                        name="AmendmentFields"
+                                                        label=""
+                                                        value={value}
+                                                        placeholder="Select Amendment Field"
+                                                        options={amendmentFieldList}
+                                                        onchange={handleAmendmentFieldChange}
+                                                        variant="label-hidden">
+                                                </lightning-combobox>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" medium-device-size="6" class="slds-var-p-left_small">
+                                                <lightning-button label="Add Field" variant="brand" onclick={handleAddSelectedFieldForAmendment}></lightning-button>
+                                            </lightning-layout-item>
+                                        </lightning-layout>
+                                    </lightning-layout-item>
+
+                                    <template for:each={amendmentFields} for:item="field">
+                                        <template if:true={field.MULTIPICKLIST}>
+                                            <lightning-layout-item size="12" small-device-size="10" medium-device-size="11" key={field.apiName}>
+                                                <lightning-dual-listbox
+                                                        name={field.apiName}
+                                                        label={field.label}
+                                                        source-label="Available"
+                                                        selected-label="Selected"
+                                                        value={field.values}
+                                                        options={field.picklistValues}
+                                                        onchange={handleChange}>
+                                                </lightning-dual-listbox>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" small-device-size="2" medium-device-size="1" key={field.apiName}>
+                                                <lightning-button-icon
+                                                        variant="error"
+                                                        icon-name="utility:close"
+                                                        data-name={field.apiName}
+                                                        onclick={removeField}>
+                                                </lightning-button-icon>
+                                            </lightning-layout-item>
+                                        </template>
+                                        <template if:false= {field.MULTIPICKLIST}>
+                                            <template if:false={field.PICKLIST}>
+                                                <lightning-layout-item size="12" small-device-size="10" medium-device-size="11" key={field.apiName}>
+                                                    <lightning-input
+                                                            name={field.apiName}
+                                                            label={field.label}
+                                                            type={field.dataType}
+                                                            value={field.value}
+                                                            variant="label-inline"
+                                                            onchange={handleChange}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" small-device-size="2" medium-device-size="1" key={field.apiName}>
+                                                    <lightning-button-icon
+                                                            variant="error"
+                                                            icon-name="utility:close"
+                                                            data-name={field.apiName}
+                                                            onclick={removeField}>
+                                                    </lightning-button-icon>
+                                                </lightning-layout-item>
+                                            </template>
+
+                                            <template if:true={field.PICKLIST}>
+                                                <lightning-layout-item size="12" small-device-size="10" medium-device-size="11" key={field.apiName}>
+                                                    <lightning-combobox
+                                                            name={field.apiName}
+                                                            label={field.label}
+                                                            placeholder={field.label}
+                                                            value={field.value}
+                                                            options={field.picklistValues}
+                                                            variant="label-inline"
+                                                            onchange={handleChange}>
+                                                    </lightning-combobox>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" small-device-size="2" medium-device-size="1" key={field.apiName}>
+                                                    <lightning-button-icon
+                                                            variant="error"
+                                                            icon-name="utility:close"
+                                                            data-name={field.apiName}
+                                                            onclick={removeField}>
+                                                    </lightning-button-icon>
+                                                </lightning-layout-item>
+                                            </template>
+                                        </template>
+
+                                    </template>
+                                </lightning-layout>
+                            </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="slds-card__footer slds-var-m-bottom_xx-large">
+                            <div class="slds-align_absolute-center slds-var-m-around_x-small">
+                                <lightning-button class="slds-var-m-top_small" label="Back" onclick={handleCancel}></lightning-button>
+                                <lightning-button class="slds-var-m-top_small slds-var-m-left_small" variant="brand" type="submit" label="Save"></lightning-button>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-record-edit-form>
+            </template>
+
+            <template if:false={isEditMode}>
+                <lightning-record-view-form object-api-name="Amendment__c" record-id={recordId} onsuccess={handleSuccess} onerror={handleOnError} onsubmit={handleSubmit} onload={handleOnLoad}>
+                    <lightning-output-field field-name="Warning__c" variant="label-hidden"></lightning-output-field>
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-var-p-horizontal_small">
+                            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder">
+                                <span class="section-header-title slds-var-p-horizontal--small slds-truncate slds-var-m-left_small">
+                                    Amendment Details
+                                </span>
+                            </h3>
+                            <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+                                <lightning-layout multiple-rows>
+                                    <lightning-layout-item size="12">
+                                        <lightning-output-field field-name="Contract__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                        <lightning-output-field field-name="Amendment_Number1__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                        <lightning-button-icon
+                                                variant="bare"
+                                                icon-name="utility:edit"
+                                                disabled={isActivated} onclick={handleEdit}>
+                                        </lightning-button-icon>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                        <lightning-output-field field-name="Amendment_Effective_Date__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                        <lightning-button-icon
+                                                variant="bare"
+                                                icon-name="utility:edit"
+                                                disabled={isActivated} onclick={handleEdit}>
+                                        </lightning-button-icon>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                        <lightning-output-field field-name="Amendment_Description__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                        <lightning-button-icon
+                                                variant="bare"
+                                                icon-name="utility:edit"
+                                                disabled={isActivated} onclick={handleEdit}>
+                                        </lightning-button-icon>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                        <lightning-output-field field-name="Amendment_Status__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                        <lightning-button-icon
+                                                variant="bare"
+                                                icon-name="utility:edit"
+                                                disabled={isActivated} onclick={handleEdit}>
+                                        </lightning-button-icon>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                        <lightning-output-field field-name="Amendment_Type__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                        <lightning-button-icon
+                                                variant="bare"
+                                                icon-name="utility:edit"
+                                                disabled={isActivated} onclick={handleEdit}>
+                                        </lightning-button-icon>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <lightning-output-field field-name="CreatedById"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <lightning-output-field field-name="CreatedDate"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <lightning-output-field field-name="LastModifiedById"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <lightning-output-field field-name="LastModifiedDate"></lightning-output-field>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-var-p-horizontal_small">
+                            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder">
+                                <span class="section-header-title slds-var-p-horizontal--small slds-truncate slds-var-m-left_small">
+                                    Contract fields for Amendment
+                                </span>
+                            </h3>
+
+                            <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+                                <lightning-layout multiple-rows>
+                                    <template for:each={amendmentFields} for:item="field">
+                                        <lightning-layout-item size="12" key={field.apiName}>
+                                            <lightning-layout multiple-rows>
+                                                <lightning-layout-item size="12" small-device-size="10" medium-device-size="11">
+                                                    <div class="slds-form-element_horizontal slds-form-element">
+                                                        <span class="slds-form-element__label">{field.label}</span>
+                                                        <div class="slds-form-element__control">
+                                                            <lightning-formatted-text value={field.value}></lightning-formatted-text>
+                                                        </div>
+                                                    </div>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" small-device-size="2" medium-device-size="1">
+                                                    <lightning-button-icon
+                                                            variant="bare"
+                                                            icon-name="utility:edit"
+                                                            disabled={isActivated} onclick={handleEdit}>
+                                                    </lightning-button-icon>
+                                                </lightning-layout-item>
+                                            </lightning-layout>
+                                        </lightning-layout-item>
+                                    </template>
+                                </lightning-layout>
+                            </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="slds-card__footer">
+                            <div class="slds-align_absolute-center slds-var-m-around_x-small">
+                                <lightning-button class="slds-var-m-top_small" label="Back" onclick={handleCancel}></lightning-button>
+                                <lightning-button class="slds-var-m-top_small slds-var-m-left_small" label="Cancel Amendment" disabled={isCancelled} onclick={handleCancelAmendment}></lightning-button>
+                                <lightning-button class="slds-var-m-top_small slds-var-m-left_small" variant="brand" label="Edit" disabled={isActivated} onclick={handleEdit}></lightning-button>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-record-view-form>
+            </template>
+        </lightning-card>
+    </div>
+</template>

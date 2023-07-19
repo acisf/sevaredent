@@ -1,0 +1,261 @@
+<template>
+    <div class="elected-contracts-lst_header-container">
+        <div>
+            <div class="header-container slds-p-top_small slds-p-bottom_small">
+                <lightning-icon
+                    icon-name="standard:scheduling_policy"
+                ></lightning-icon>
+                <div class="slds-p-left_small">
+                    <h1 class="elected-contracts-lst_object">
+                        {LABELS.LIST_OBJECT}
+                    </h1>
+                    <div class="elected-contracts-lst_header">
+                        {LABELS.LIST_NAME}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <lightning-input
+            class="search-input"
+            placeholder="Search this list..."
+            type="search"
+            onkeypress={handleSearch}
+            onfocusout={searchByTerm}
+        ></lightning-input>
+    </div>
+
+    <div if:false={contracts}>{LABELS.NO_RECORDS}</div>
+    <div if:true={contracts}>
+        <!-- desctop version -->
+        <table
+            if:false={isMobile}
+            class="slds-table sdsl-table__responsive slds-table_bordered"
+        >
+            <tr>
+                <th></th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="Name"
+                            data-id="0"
+                            onclick={changeOrder}
+                            class="slds-truncate"
+                        >
+                            {LABELS.CONTRACT_AGREEMENT}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon0}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="Sevaredent_Contract_Number__c"
+                            onclick={changeOrder}
+                            data-id="1"
+                            class="slds-truncate"
+                        >
+                            {LABELS.SEVAREDENT_NUMBER}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon1}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="APXT_Redlining__Account__r.Name"
+                            onclick={changeOrder}
+                            data-id="2"
+                            class="slds-truncate"
+                        >
+                            {LABELS.ACCOUNT}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon2}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="APXT_Redlining__Effective_Date__c"
+                            onclick={changeOrder}
+                            data-id="3"
+                            class="slds-truncate"
+                        >
+                            {LABELS.EFFECTIVE_DATE}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon3}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="APXT_Redlining__Expiration_Date__c"
+                            onclick={changeOrder}
+                            data-id="4"
+                            class="slds-truncate"
+                        >
+                            {LABELS.EXPIRATION_DATE}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon4}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th class="slds-border_right">
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                            slds-truncate
+                        "
+                    >
+                        <div
+                            data-name="Category__c"
+                            onclick={changeOrder}
+                            data-id="5"
+                            class="slds-truncate"
+                        >
+                        {LABELS.CATEGORY}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon5}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+                <th>
+                    <div
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            column-header
+                        "
+                    >
+                        <div
+                            data-name="Sub_Category__c"
+                            onclick={changeOrder}
+                            onmouseover={showArrow}
+                            data-id="6"
+                            class="slds-truncate"
+                        >
+                            {LABELS.SUB_CATEGORY}
+                        </div>
+                        <lightning-button-icon
+                            class="ordering_btn hide-button"
+                            variant="bare"
+                            icon-name={icon6}
+                        ></lightning-button-icon>
+                    </div>
+                </th>
+            </tr>
+
+            <tr for:each={contracts} for:item="contract" key={contract.Id}>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">{contract.Number}</div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">
+                        <a href={contract.URL}>{contract.Name}</a>
+                    </div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">
+                        {contract.Sevaredent_Contract_Number__c}
+                    </div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">
+                        {contract.Account}
+                    </div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">
+                        {contract.FormattedEffectiveDate}
+                    </div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">
+                        {contract.FormattedExpirationDate}
+                    </div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">{contract.Category__c}</div>
+                </td>
+                <td class="slds-text-align_left">
+                    <div class="slds-truncate list-table-item">{contract.Sub_Category__c}</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- mobile version -->
+        <div if:true={isMobile}>
+            <div for:each={contracts} for:item="contract" key={contract.Id}>
+                <div class="contract-item-mobile">
+                    <h2 class="itemTitle contract-name-mobile">
+                        <a href={contract.URL}>{contract.Name}</a>
+                    </h2>
+                    <div class="contract-item-inner-mobile">
+                        <div class="contract-item-titles">
+                            <div class="title-item">{LABELS.SEVAREDENT_NUMBER}:</div>
+                            <div class="title-item">{LABELS.ACCOUNT}:</div>
+                            <div class="title-item">{LABELS.EFFECTIVE_DATE}:</div>
+                            <div class="title-item">{LABELS.EXPIRATION_DATE}:</div>
+                            <div class="title-item">{LABELS.CATEGORY}:</div>
+                            <div class="title-item">{LABELS.SUB_CATEGORY}:</div>
+                        </div>
+                        <div class="contranct-item-values">
+                            <div>{contract.Sevaredent_Contract_Number__c}</div>
+                            <div>{contract.APXT_Redlining__Account__r.Name}</div>
+                            <div>{contract.FormattedEffectiveDate}</div>
+                            <div>{contract.FormattedExpirationDate}</div>
+                            <div>{contract.Category__c}</div>
+                            <div>{contract.Sub_Category__c}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

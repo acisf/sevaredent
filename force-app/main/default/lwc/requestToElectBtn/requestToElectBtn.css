@@ -1,0 +1,16 @@
+.request-to-elect_btn {
+    width: 100%;
+    font-size: 16px;
+    border: solid 1px #18316F;
+    padding: 14px;
+    margin: 10px 0!important;
+    color: #fff;
+
+    background: #18316F!important;
+    border-radius: 5px;
+    transition: .1s;
+}
+.request-to-elect_btn:hover{
+    color: #18316F!important;
+    background: none!important;
+}

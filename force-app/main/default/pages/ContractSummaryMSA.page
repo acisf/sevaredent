@@ -1,0 +1,132 @@
+<!--
+ - Created by cshah on Oct 19, 2020.
+ -->
+
+<apex:page id="ContractSummaryMSA" standardController="Contract" extensions="ContractSummaryMSAController"
+           renderAs="pdf" sideBar="false" showHeader="false" title="Contract Summary"
+           applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false">
+
+    <head>
+        <style>
+            @page {
+                margin-top: 1.5in;
+                margin-bottom: 1in;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-center {
+                    content: element(footer);
+                }
+            }
+            div.header {
+                position: running(header);
+            }
+            div.footer {
+                position: running(footer);
+                border-top: 1px solid #fec98a;
+                min-width: 5in;
+                width: 100%;
+            }
+            div.content {
+                margin-left:.28in;
+                margin-right:.28in;
+            }
+        </style>
+
+    </head>
+    <!-- <apex:image id="SevaredentLogo" value="{!$Resource.SevaredentLogo}" width="100%" height="100"/> -->
+    <div class="header">
+        <apex:image style="float:left;" width="3in" height="auto" id="SevaredentLogo1" value="{!$Resource.letterheader1}" />
+        <apex:image style="float:right;margin-right:-.65in;"  width="2in" height="auto" id="SevaredentLogo2" value="{!$Resource.letterheader2}" />
+    </div>
+    <div style="clear:both;">
+    </div>
+
+    <div class="content">
+        <table border="0" cellSpacing="2" cellpadding="2" width="100%">
+            <tr>
+                <td> <b>Contract Number:</b> </td>
+                <td> {!contract.Sevaredent_Contract_Number__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Vendor/Supplier Name:</b> </td>
+                <td> {!contract.Account.Name} </td>
+            </tr>
+            <tr>
+                <td> <b>Contract Status:</b> </td>
+                <td> {!contract.Status} </td>
+            </tr>
+            <tr>
+                <td> <b>Category:</b> </td>
+                <td> {!contract.Category__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Sub Category:</b> </td>
+                <td> {!contract.Sub_Category__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Contract Start Date:</b> </td>
+                <td> {!startDate} </td>
+            </tr>
+            <tr>
+                <td> <b>Contract End Date:</b> </td>
+                <td> {!endDate} </td>
+            </tr>
+            <tr>
+                <td> <b>Price Escalator Details:</b> </td>
+                <td> {!contract.Price_Escalator_Description__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Award Type:</b> </td>
+                <td> {!contract.Award_Type__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Rebate Details:</b> </td>
+                <td> {!contract.Rebate_Description__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Minimum Order Description:</b> </td>
+                <td> {!contract.Minimum_Order_Description__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Distribution Channel:</b> </td>
+                <td> {!contract.Distribution_Channel__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Contract Authorized Distributors:</b> </td>
+                <td> {!contract.Contract_Authorized_Distributors__c} </td>
+            </tr>
+            <tr>
+                <td> <b>FOB Terms:</b> </td>
+                <td> {!contract.FOB_Terms__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Freight Terms:</b> </td>
+                <td> {!contract.Freight_Terms__c} </td>
+            </tr>
+            <tr>
+                <td> <b>3rd Party Freight:</b> </td>
+                <td> {!contract.X3rd_Party_Freight__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Variable Freight Terms:</b> </td>
+                <td> {!contract.Variable_Freight_Terms__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Surcharge Details:</b> </td>
+                <td> {!contract.Surcharges_Description__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Payment Terms:</b> </td>
+                <td> {!contract.Payment_Terms__c} </td>
+            </tr>
+            <tr>
+                <td> <b>Payment Discount:</b> </td>
+                <td> {!contract.Payment_Discount__c} </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+    </div>
+</apex:page>

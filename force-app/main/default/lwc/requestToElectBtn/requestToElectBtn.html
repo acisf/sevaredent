@@ -1,0 +1,9 @@
+<template>
+    <div if:false={isImplemented}>
+        <button class="request-to-elect_btn" data-id="Election" onclick={sendRequest}>{LABELS.REQUEST_ELECT_BTN}</button>
+    </div>
+    <div if:true={showPriceReport}>
+        <button class="request-to-elect_btn" onclick={goToItemPricingReport}>{LABELS.GET_PRICING_ITEMS_BTN}</button>
+    </div>
+    <button class="request-to-elect_btn" data-id="More Information" onclick={sendRequest}>{LABELS.REQUEST_INFO_BTN}</button>
+</template>

@@ -1,0 +1,19 @@
+<!--
+ - Created by cshah on Oct 30, 2020.
+ -->
+
+<aura:component description="newAmendmentRecordAura" implements="lightning:actionOverride,lightning:hasPageReference,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,flexipage:availableForRecordHome,force:hasSObjectName,lightning:isUrlAddressable" access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+
+    <aura:attribute name="refresh" type="Boolean" default="false" />
+    <aura:attribute name="contractId" type="String" default="" />
+    <aura:attribute name="actionName" type="String" default="view" />
+
+
+    <aura:if isTrue="{!and(v.refresh, or(v.recordId, v.contractId))}">
+        <c:newAmendmentRecord recordId="{!v.recordId}" contractId="{!v.contractId}" actionName="{!v.actionName}" />
+    </aura:if>
+</aura:component>

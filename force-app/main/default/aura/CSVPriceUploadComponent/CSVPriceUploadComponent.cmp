@@ -1,0 +1,243 @@
+<aura:component controller="CSVPriceUploadComponentController" implements="force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global">
+
+    <!-- FOR TEST 
+    /apex/CSVPriceUploadComponent?Id=a0h550000036CI0AAM
+    -->
+    <aura:handler name="init" value="this" action="{!c.doInit}"/>
+    <aura:attribute name="filetype" type="List" default="['.csv']" />
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="isCSV" type="Boolean" default="false" />
+    <aura:attribute name="listRecordToUpload" type="Item_Pricing__c[]" default="[]" />
+    <aura:attribute name="listRecordExists" type="Item_Pricing__c[]" default="[]" />
+    <aura:attribute name="listRecordToDelete" type="Item_Pricing__c[]" default="[]" />
+
+    <aura:attribute name="listCustomMetadataRecords" type="CSV_to_Salesforce_Field_Map__mdt[]" default="[]" />
+
+    <aura:attribute name="dataExists" type="Boolean" default="false" />
+    <aura:attribute name="dataStatusHeader" type="String" default="Existing Data"/>
+    <aura:attribute name="listOfFieldsCSV" type="List" />
+    <!-- ONLY LABELS-->
+    <aura:attribute name="listOfCSVLabels" type="List" />
+    <aura:attribute name="mapCSVToSFFeild" type="Map" />
+    
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="deleteIds" type="list" default="[]"/>
+    
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="loadOffset" type="Integer" default="1"/>
+    <aura:attribute name="initialRows" type="Integer" default="10"/>
+    <!--20 Records First-->
+    <aura:attribute name="currentCount" type="Integer" default="10"/>
+    <aura:attribute name="totalRows" type="Integer" default="0"/>
+
+    
+                
+
+    <aura:attribute name="contractAgreementName" type="String" default=""/>
+    <aura:attribute name="reportId" type="String" default=""/>
+
+    <!--- ERROR MESSAGE-->
+    <aura:attribute name="popupHeader" type="String" default="ERROR"/>
+    <aura:attribute name="popupTheme" type="String" default="slds-theme--error"/>
+    <aura:attribute name="popupMessage" type="String" default="Something went wrong."/>
+    <aura:attribute name="errorMessage" type="String" default="Something went wrong."/>
+    
+
+    
+    <!-- To get the contract agreement Record-->
+    <aura:attribute name="contractAgreementRecord" type="APXT_Redlining__Contract_Agreement__c"/>
+    <aura:attribute name="recordError" type="String"
+                    description="An error message bound to force:recordData"/>
+
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      fields="Name,Sevaredent_Contract_Number__c"
+                      targetError="{!v.recordError}"
+                      targetFields="{!v.contractAgreementRecord }"
+                      mode="VIEW"/>
+
+    <!-- Display a lightning card with details about the record -->
+    
+
+    <!-- UPDATE SIZE-->
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 80rem !important;
+        width:100% !important;
+        max-height: 80rem !important;
+        height:100% !important;
+        }
+        .slds-scrollable_x{
+        overflow-x: scroll; !important;
+        }
+    </aura:html>
+
+    <!--ERROR POP UP-->
+    
+        <div aura:id="modal_popup" class="slds-hide">
+            <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+                <div class="slds-modal__container" style ="width: 60% !important;">
+                    <div class="{!'slds-modal__header ' + v.popupTheme + ' slds-theme--alert-texture'}">
+                        <h2 class="slds-text-heading--medium" id="prompt-heading-id">{!v.popupHeader}</h2>
+                    </div>
+                    <div class=" slds-modal__content slds-p-around--medium">
+                        
+                        <b style="padding:3px;color: green;font-size: 120%;"> <ui:outputText class="slds-align_absolute-center" value="{!v.popupMessage}"/> </b>
+                        
+                        <ui:outputText class="slds-align_absolute-center" value="{!v.errorMessage}"/>
+                        
+                    </div>
+                    <div class="slds-modal__footer slds-theme--default">
+                        <lightning:button variant="brand" label="Close" onclick="{!c.closeWarningBox}"/> 
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+        </div>
+    
+
+    <!-- Display Lightning Data Service errors, if any -->
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+                {!v.recordError}</div>
+    </aura:if>
+
+
+    <!-- SPINNER-->
+    <div aura:id="spinner_box" class="slds-hide">
+		<lightning:spinner variant="brand" size="large"/>
+	</div>
+    
+    <!-- UPLOAD LOGO -->
+    <div class="slds-page-header ">
+		<div class="slds-media">
+			<!--<button class="slds-button" onclick="{!c.navigateToCasePage}">&laquo; Back To Case</button>-->
+			<div class="slds-align_absolute-center">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container " title="">
+						<!--<lightning:icon iconName="action:upload" variant="" size="x-small"/> -->
+					</span>
+				</div>
+				<div class="slds-media__body">
+					Sevaredent Contract Number: {!v.contractAgreementRecord.Sevaredent_Contract_Number__c}
+					<p class="slds-text-body_small slds-line-height_reset"></p>
+				</div>
+			</div>
+			<!--<button class="slds-button slds-button_neutral" aura:id="preButton2" onclick="{!c.moveToCredentials}">Add Credentials</button> -->
+		</div>
+	</div>
+
+    <div class="slds-box defualt-padding">
+        <div class="slds-align_absolute-center ">
+            <lightning:input class="slds-align_absolute-center" aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="file" multiple="false"/>
+        </div> 
+            <div class="slds-text-body_small slds-text-color_error slds-align_absolute-center">{!v.fileName} </div>
+		<!--use aura:if for show-hide the loading spinner image-->
+		<aura:if isTrue="{!v.showLoadingSpinner}">
+			<div class="slds-text-body_small slds-text-color_error">Uploading... 
+	         
+				<img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>'
+	      
+			</div>
+		</aura:if>
+		<br/>
+		<button class=" slds-align_absolute-center slds-button slds-button_brand" onclick="{!c.showConfirmBox}">Submit</button>
+	</div>
+
+    <!-- TO SHOW UPLOADED DATA -->
+    
+	<aura:if isTrue="{!v.dataExists}">
+        <div class="slds"> 
+
+            <table class="slds-table slds-table--bordered slds-table--striped">
+                <thead>
+                    <tr>
+                        <th scope="col"><span class="slds-truncate">Number of Item Pricing records</span></th>
+                        <th scope="col"><span class="slds-truncate">URL of Report</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{!v.totalRows}</td>
+                        <td><a href="" onclick="{!c.goToReport}">My Report</a></td>
+                    </tr>
+                </tbody>
+            </table>
+                </div>
+        
+
+        <!--
+        <div class="slds-grid slds-gridalign-end"> 
+            <lightning:button variant="brand" label="Delete" onclick="{!c.doDelete}"/>
+        </div>
+        
+        <div style="height:600px">
+            <lightning:datatable  data="{! v.listRecordExists }"
+                            columns="{! v.listOfFieldsCSV }"
+                            keyField="id"
+                            errors="{! v.errors }"
+                            draftValues="{! v.draftValues }"
+                            onsave="{! c.handleSaveEdition }"
+                            onrowselection="{! c.handleRowAction }"
+                            enableInfiniteLoading="{! v.enableInfiniteLoading }"
+                            onloadmore="{! c.loadMoreData }"
+                            />
+        
+            
+        </div>
+        <div class="slds-float_left">
+            
+        </div>
+        -->
+    </aura:if>
+    
+
+    <!--ARE YOU SURE??-->
+    <div aura:id="areYouSure" class="slds-hide"  >
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container" style ="width: 40% !important;" >
+				<div class="slds-modal__content slds-p-around_medium"  id="modal-content-id-1">
+					<p align="center" style="font-size: medium;">Do you want to continue ?
+                        <br/>
+                        <br/>
+                    </p>    
+                    <p align="" style="color:red;font-size:medium;">Note : </p>
+                    
+                        <ul class="slds-list_dotted">
+                            <li >Existing Records will be updated based on the generated Unique Key value. <br/> Unique Key = Sevaredent Contract Nbr_Manufacturer Name_Manufacturer Part Number_UOM_Price Start Date(MMDDYYYY). </li>
+                            <li >Acceptable date format MM/DD/YYYY</li>
+                            <li >Required Fields
+                                <ul class="slds-list_dotted">
+                                    <li> Sevaredent Contract Nbr</li>
+                                    <li> Manufacture Name</li>
+                                    <li> Manufacture Part Number</li>
+                                    <li> Item Description</li>
+                                    <li> Price Start Date</li>
+                                    <li> Price End Date</li>
+                                    <li> UOM</li>
+                                    <li> Qty of EA p/UOM</li>
+                                    <li> Packaging String</li>
+                                    <li> Contract Tier 1 Description</li>
+                                    <li> Contract Tier 1 Price/UOM</li>
+
+                                </ul>
+                            </li>
+                            
+                          </ul>  
+						
+					
+				</div>
+				<footer class="slds-modal__footer">
+					<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Yes</button>
+					<button class="slds-button slds-button_brand" onclick="{!c.hideConfirmBox}">No</button>
+				</footer>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</div>
+    
+  
+
+</aura:component>

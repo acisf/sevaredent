@@ -1,0 +1,75 @@
+th {
+    cursor: pointer;
+    max-width: 100px;
+}
+.hide-button {
+    display: none;
+}
+
+.elected-contracts-lst_header-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.elected-contracts-lst_header {
+    font-size: 1.125rem;
+    font-weight: bold;
+    line-height: 1.25;
+}
+
+.elected-contracts-lst_object {
+    line-height: 1;
+}
+
+.search-input {
+    padding-bottom: 1rem;
+}
+
+.slds-table_bordered {
+    border-top: none !important;
+}
+
+.contract-item-mobile{
+    background-color: var(--lwc-colorBackgroundAlt);
+    border-bottom: 1px solid var(--lwc-colorBorderSeparator);
+    border-bottom-color: var(--lwc-colorBorder);
+    border-top: 1px solid var(--lwc-colorBorderSeparator);
+    border-top-color: var(--lwc-colorBorder);
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 14px;
+}
+.contract-item-inner-mobile{
+    display: flex;
+}
+.contract-name-mobile{
+    font-size: 1rem;
+    font-weight: var(--lwc-fontWeightBold);
+    line-height: var(--lwc-lineHeightText);
+    padding-bottom: 3px;
+    color: var(--lwc-colorTextLink)
+}
+.contract-item-titles{
+    color: var(--lwc-colorTextActionLabel);
+    width: 30%;
+    padding-right: var(--lwc-spacingSmall);
+}
+.title-item{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.contract-item-values{
+    color: var(--lwc-colorTextDefault);
+    width: 70%;
+}
+
+.list-table-item {
+    max-width: 15rem;
+}
